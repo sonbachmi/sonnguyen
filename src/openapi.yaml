@@ -1,0 +1,291 @@
+openapi: 3.0.4
+info:
+  title: Son Nguyen's CRUD Server
+  description: Simple CRUD API application made with Express TypeScript to answer challenge from 99 Tech
+  version: 0.1.0
+
+servers:
+  - url: http://localhost:3000
+    description: Local server
+
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          description: Error response
+          properties:
+            message:
+              type: string
+              description: Error message
+      example:
+        error:
+          message: "Error message"
+    Todo:
+      type: object
+      required:
+        - id
+        - title
+      properties:
+        id:
+          type: number
+          description: The auto-generated ID of the todo
+        title:
+          type: string
+          description: The title of the todo
+        description:
+          type: string
+          description: The todo description (optional)
+        completed:
+          type: boolean
+          description: Completion status (optional, default false)
+        createdAt:
+          type: string
+          format: date
+          description: The date the todo was added
+        updatedAt:
+          type: string
+          format: date
+          description: The date the todo was updated
+      example:
+        id: 1
+        title: First task of day
+        description: Do these stuff...
+        completed: false
+        createdAt: 2024-03-10T04:05:06.157Z
+    TodoList:
+      type: array
+      items:
+        $ref: "#/components/schemas/Todo"
+    CreateTodo:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          description: todo title
+        description:
+          type: string
+          description: todo description (optional)
+      example:
+        title: New task of day
+        description: Add these stuff...
+    CreateTodoResult:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          description: ID of created todo
+      example:
+        id: 10
+    UpdateTodo:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          description: todo title
+        description:
+          type: string
+          description: todo description (optional)
+        completed:
+          type: boolean
+          description: completion status (optional, default to false)
+      example:
+        title: Existing task
+        description:
+        completed: true
+    PatchTodo:
+      type: object
+      properties:
+        title:
+          type: string
+          description: todo title (optional)
+        description:
+          type: string
+          description: todo description (optional)
+        completed:
+          type: boolean
+          description: completion status (optional)
+      example:
+        title:
+        description: New description
+        completed:
+    UpdateTodoResult:
+      type: object
+      required:
+        - id
+        - status
+      properties:
+        id:
+          type: integer
+          description: ID of updated todo
+        status:
+          type: string
+          enum:
+            - updated
+          description: Update success
+      example:
+        id: 10
+        status: "updated"
+    DeleteTodoResult:
+      type: object
+      required:
+        - id
+        - status
+      properties:
+        id:
+          type: integer
+          description: ID of updated todo
+        status:
+          type: string
+          enum:
+            - deleted
+          description: Deletion success
+      example:
+        id: 10
+        status: "deleted"
+
+paths:
+
+  /todos:
+    get:
+      summary: Get todo list
+      responses:
+        200:
+          description: Returns whole list of todos Todo[]
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TodoList"
+    post:
+      summary: Add todo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTodo"
+      responses:
+        201:
+          description: Returns ID of created todo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateTodoResult"
+        404:
+          description: Invalid parameter - ID not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        400:
+          description: Validation error - missing title
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /todos/{id}:
+    get:
+      summary: Get todo by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Returns found todo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+        404:
+          description: Invalid parameter - ID not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      summary: Update (replace) todo
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTodo"
+      responses:
+        200:
+          description: Returns update result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateTodoResult"
+        404:
+          description: Invalid parameter - ID not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        400:
+          description: Validation error - missing title
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      summary: Patch (partial update) todo
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchTodo"
+      responses:
+        200:
+          description: Returns update result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateTodoResult"
+        404:
+          description: Invalid parameter - ID not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: Delete todo
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Returns deletion result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteTodoResult"
+        404:
+          description: Invalid parameter - ID not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"

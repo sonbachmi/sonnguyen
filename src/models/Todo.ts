@@ -13,7 +13,7 @@ export class Todo extends Model {
     @Column({type: DataType.TEXT})
     declare description?: string
 
-    @Column({type: DataType.TEXT})
+    @Column({type: DataType.BOOLEAN})
     declare completed?: boolean
 }
 

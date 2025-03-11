@@ -7,7 +7,7 @@
     "test:sum": "tsx src/sum.test.ts",
     "server": "tsx src/server.ts",
     "dev": "tsx watch src/server.ts",
-    "build": "tsc src/server.ts"
+    "build": "tsc"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
@@ -25,7 +25,7 @@
     "sequelize": "^6.37.6",
     "sequelize-typescript": "^2.1.6",
     "sqlite3": "^5.1.7",
-    "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "yaml": "^2.7.0"
   }
 }
