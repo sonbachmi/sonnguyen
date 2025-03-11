@@ -4,10 +4,11 @@
 ### Overview
 Architecture documentation to answer Problem 6 from 99 Tech's technical challenge.
 
-This provides a preliminary technical specification for the architecture and flow of the module, as well as
-suggestion on how to implement the module as per requirements, on a high-level perspective.
+This provides a preliminary technical specification for a proposed architecture and according flow of the module on a high-level perspective, as well as
+suggestion on how to implement some aspects of a software module to meet requirements. Note that the goal is for demonstration
+of my skills so it is by no means thorough as a real documentation of this scope should be.
 
-Specifically, the module is to serve two three purposes:
+Specifically, the module is to serve three main purposes:
 
 1. provide an UI for user to gain points as reward for
 completing certain actions
@@ -32,25 +33,25 @@ for maintaining such functionalities and cross-relations among the actors and sy
 
 A regular user model whose typical attributes (profile, preferences)
 are omitted from the diagram for simplicity. The only important attribute
-tp add for this module to work is the `score` field. The application server
+to add for this module to work is the `score` field. The application server
 is responsible for increasing this score and persists the change at the backend whenever the user sends a valid claim request to the API
-via the UI, after they complete an action.
+via the UI, after they have completed an action.
 
 #### Scoreboard Model
 
 One simple approach to maintain the scoreboard is to programmatically query the database
-for the top scorers to return the results on every request, so no need to main another table for such data.
+for the top scorers then return the results on every request, so no need to maintain another table for such data.
 However, this may raise performance issues especially when the number of users
-and the frequency of actions become high enough; database query is an expensive operation
-that is not worth repeating for just a small subset of data like the scoreboard. 
+and the frequency of actions become high enough; database query is an expensive operation in terms of time and resource comsumption,
+which is not worth repeating again and again for just a small subset of data like the scoreboard. 
 For that reason, a more time-efficient approach is recommended as presented in the diagram: storing
 the running scoreboard data in separate tables. The API flow to implement this might be as follows:
 
 - On receiving an API call claiming points from a user, the server first validates the claim to determine the validity and value of the claim.
-- The security layer of the server also authenticates and/or authorizes the request to ensure the user is entitled to be rewarded (such as those assigned a `Rewardable` role in the ACL).
+- The security layer of the server also authenticates and/or authorizes the request to ensure the user is entitled to be rewarded (such as those assigned a "`Rewardable`" role in the ACL).
 This step is very important to prevent malicious attacks on the scoring system.
 - Past authentication, the backend then rewards the user by increasing their `score` field by the determined value.
-- The score is then checked if it rises to top 10. If not the no more need at the scoreboard, just skip to last step (finshing request)
+- The score is then checked if it reaches top 10. If not then no more need to deal with the scoreboard, just skip to last step (finishing request)
 - If top 10, the backend then creates a `Board Position` record for each top scorer, which includes essentially a foreign key to track the user ID, and the score
 - This ordered list of records is then inserted into the `Scoreboard` table whose each entry is basically a snapshot of the current scoreboard, with timestamp added.
 - The API then finishes the request and responds to the UI client, reporting the result.
@@ -71,5 +72,5 @@ platform like Websocket, Server Event, GraphQL subscriptions, or 3rd-party cloud
 This documentation has presented a high-level view of a viable architecture for the module to work as required.
 Some insights and suggestions are also provided to help the backend team aim in the right track
 to find a good and performant implementation that solves the problem well. Please review, brainstorm and send your feedback, which will be valuable
-to improve the potentials that this proposal may help the team achieve. Thank you for your attention.
+to improve it. Thank you for your attention.
 
