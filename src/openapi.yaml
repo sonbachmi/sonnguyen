@@ -153,7 +153,22 @@ components:
       example:
         id: 10
         status: "deleted"
-
+    FilterTodos:
+      type: object
+      properties:
+        title:
+          type: string
+          description: text to search in todo title (optional)
+        description:
+          type: string
+          description: text to search in todo description (optional)
+        completed:
+          type: boolean
+          description: completion status to search (optional)
+      example:
+        title: Some title
+        description: Some description
+        completed:
 paths:
 
   /todos:
@@ -192,6 +207,23 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+
+  /todos/search:
+    post:
+      summary: Get filtered todo list
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterTodos"
+      responses:
+        200:
+          description: Returns filtered todo array Todo[]
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TodoList"
+
   /todos/{id}:
     get:
       summary: Get todo by ID
@@ -289,3 +321,4 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+

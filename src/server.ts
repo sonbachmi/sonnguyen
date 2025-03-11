@@ -8,6 +8,7 @@ import yaml from 'yaml';
 import { Todo } from './models/Todo';
 import { ErrorResponse } from './models/ErrorResponse';
 import { initDb } from './store';
+import { Op } from 'sequelize'
 
 const app = express();
 
@@ -21,6 +22,35 @@ initDb();
 app.get('/todos', async (req: Request, res: Response) => {
   try {
     const todos = await Todo.findAll();
+    res.json(todos);
+  } catch (error) {
+    const err = error as Error;
+    res.status(500).json(new ErrorResponse(err.message));
+  }
+});
+
+app.post('/todos/search', async (req: Request, res: Response) => {
+  try {
+    const { title, description, completed } = req.body;
+    const whereClauses = []
+        if (title != null) {
+          whereClauses.push({
+            title: { [Op.like]: `%${title}%` }
+          })
+        }
+        if (description != null) {
+          whereClauses.push({
+            description: { [Op.like]: `%${description}%` }
+          })
+        }
+        if (completed != null) {
+          whereClauses.push({
+            completed
+          })
+        }
+    const todos = await Todo.findAll({
+      where: {[Op.and]: whereClauses}
+    });
     res.json(todos);
   } catch (error) {
     const err = error as Error;
@@ -49,12 +79,12 @@ app.get('/todos/:id', async (req: Request, res: Response) => {
 
 app.post('/todos', async (req: Request, res: Response) => {
   try {
-    const { title, description = '' } = req.body;
+    const { title, description = '', completed = false } = req.body;
     if (!title) {
       res.status(400).json(new ErrorResponse('Missing title'));
       return;
     }
-    const { id } = await Todo.create({ title, description });
+    const { id } = await Todo.create({ title, description, completed });
     res.json({ id });
   } catch (error) {
     const err = error as Error;

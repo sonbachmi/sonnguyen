@@ -3,7 +3,6 @@ import {Todo} from '../models/Todo'
 import path from 'node:path'
 
 const dbPath = path.join(process.cwd(), 'src', 'store', 'todos.db');
-console.log(dbPath);
 
 let sequelize: Sequelize
 
@@ -18,7 +17,7 @@ export function initDb() {
             storage: dbPath,
             models: [Todo]
         })
-        // sequelize.sync()
+        sequelize.sync()
     } else {
     }
 }
