@@ -4,12 +4,22 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "test:sum": "tsx src/sum.test.ts"
+    "test:sum": "tsx src/sum.test.ts",
+    "server": "tsx src/server.ts"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
     "@types/node": "^22.13.10",
     "tsx": "^4.19.3",
     "typescript": "^5.5.3"
   },
-  "private": true
+  "private": true,
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "sequelize": "^6.37.6",
+    "sequelize-typescript": "^2.1.6",
+    "sqlite3": "^5.1.7"
+  }
 }
